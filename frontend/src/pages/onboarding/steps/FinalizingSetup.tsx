@@ -1,0 +1,69 @@
+import React from 'react';
+import { CogIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+
+interface StepProps {
+  onNext: () => void;
+  onSkip: () => void;
+  progress: number;
+}
+
+export const FinalizingSetup: React.FC<StepProps> = ({ onNext, onSkip, progress }) => {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen px-4">
+      <button
+        onClick={onSkip}
+        className="absolute top-6 right-6 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+      >
+        Skip
+      </button>
+
+      <div className="w-full max-w-2xl">
+        {/* Progress Bar */}
+        <div className="mb-8">
+          <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-[#0d569e] transition-all duration-500"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="bg-white rounded-3xl shadow-2xl p-12 text-center">
+          <div className="mb-8">
+            <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-[#0d569e]/10 mb-6">
+              <CogIcon className="w-12 h-12 text-[#0d569e] animate-spin" style={{ animationDuration: '3s' }} />
+            </div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              Finalizing Your Profile Setup
+            </h1>
+            <p className="text-lg text-gray-600">
+              Putting the finishing touches on your personalized experience
+            </p>
+          </div>
+
+          {/* Loading Animation */}
+          <div className="flex items-center justify-center space-x-2 mb-8">
+            <div className="w-3 h-3 bg-[#0d569e] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+            <div className="w-3 h-3 bg-[#0d569e] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+            <div className="w-3 h-3 bg-[#0d569e] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+          </div>
+
+          {/* Tip */}
+          <div className="bg-[#0d569e]/5 border-l-4 border-[#0d569e] p-6 rounded-r-lg">
+            <div className="flex items-start">
+              <CheckCircleIcon className="w-6 h-6 text-[#0d569e] flex-shrink-0 mt-1" />
+              <div className="ml-4 text-left">
+                <p className="text-sm font-semibold text-gray-900">Tip</p>
+                <p className="text-sm text-gray-800 mt-1">
+                  A complete LinkedIn profile gets more visibility and engagement.
+                  Make sure your headline, summary, and experience sections are optimized to attract your target audience.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

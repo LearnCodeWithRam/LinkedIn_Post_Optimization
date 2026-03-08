@@ -1,0 +1,374 @@
+{
+  "version": "1.0.0",
+  "analyses": {
+    "8b41c761c0ff19f7fa8fa3bbfbdf056e": {
+      "post_id": "8b41c761c0ff19f7fa8fa3bbfbdf056e",
+      "post_content_preview": "User: Here's a rewritten LinkedIn post that incorporates... vs Viral: Don't miss 𝐥𝐢𝐟𝐞-𝐜𝐡𝐚𝐧𝐠𝐢𝐧𝐠 𝐨𝐩𝐩𝐨𝐫𝐭𝐮𝐧𝐢𝐭𝐢𝐞𝐬 again...\n\nF...",
+      "analysis_data": {
+        "virality_score": 0,
+        "virality_status": "Poor",
+        "structure": {
+          "user_word_count": 246,
+          "viral_word_count": 566,
+          "word_count_difference": 320,
+          "user_hook_quality": "Good",
+          "viral_hook_quality": "Excellent",
+          "user_has_cta": true,
+          "viral_has_cta": true,
+          "structure_recommendation": "Consider breaking up the text into smaller paragraphs and using headings to improve readability",
+          "optimal_length": "120-150 words"
+        },
+        "tone": {
+          "user_tone": "Conversational",
+          "viral_tone": "Conversational",
+          "friendly_score": 80,
+          "persuasive_score": 70,
+          "formal_score": 30,
+          "tone_recommendation": "Maintain a conversational tone while incorporating more professional language",
+          "needs_simplification": true
+        },
+        "hashtags": {
+          "user_hashtags": [
+            "#StartupLife",
+            "#ResumeTips",
+            "#JobSearch",
+            "#CareerAdvice",
+            "#ATSResume"
+          ],
+          "viral_hashtags": [
+            "#jobseekers",
+            "#freshershiring",
+            "#ATSResume",
+            "#JobSearchTips",
+            "#ResumeHelp",
+            "#ResumeBuilder",
+            "#ResumeTips"
+          ],
+          "user_hashtag_count": 5,
+          "viral_hashtag_count": 7,
+          "user_has_trending": false,
+          "viral_has_trending": true,
+          "missing_trending_tags": [
+            "#jobsearch",
+            "#careeradvice",
+            "#resumebuilder"
+          ],
+          "hashtag_recommendation": "Consider adding more trending hashtags like #jobsearch, #careeradvice, and #resumebuilder to increase engagement and reach a wider audience."
+        },
+        "engagement": {
+          "user_engagement_rate": "4.8",
+          "viral_engagement_rate": "4.9",
+          "engagement_difference": "The viral post has a slightly higher engagement rate due to its more attention-grabbing title and use of emojis.",
+          "user_content_type": "Image",
+          "viral_content_type": "Text",
+          "media_recommendation": "Use a mix of media types, such as images and videos, to keep the audience engaged.",
+          "posting_time_recommendation": "Post during the best times, Tuesday-Wednesday, 8-10 AM, to maximize engagement."
+        },
+        "keywords": {
+          "user_primary_keywords": [
+            "startup dreams",
+            "resume",
+            "ATS",
+            "job search",
+            "career advice"
+          ],
+          "viral_primary_keywords": [
+            "life-changing opportunities",
+            "resume killers",
+            "ATS resume",
+            "job seekers",
+            "career strategy"
+          ],
+          "user_secondary_keywords": [
+            "attention to detail",
+            "professional tone",
+            "personal story",
+            "job seekers",
+            "career advice"
+          ],
+          "viral_secondary_keywords": [
+            "immature attention to detail",
+            "bad judgment",
+            "generic resume",
+            "lack of keywords",
+            "invisible"
+          ],
+          "missing_keywords": [
+            "generative AI",
+            "prompt engineering",
+            "machine learning",
+            "Python",
+            "cybersecurity"
+          ]
+        },
+        "comparison_table": [
+          {
+            "dimension": "Engagement Rate",
+            "viral": "4.9",
+            "user": "4.8",
+            "difference": "The viral post has a slightly higher engagement rate due to its more attention-grabbing title and use of emojis.",
+            "status": "success"
+          },
+          {
+            "dimension": "Word Count",
+            "viral": "566",
+            "user": "246",
+            "difference": "+320",
+            "status": "warning"
+          },
+          {
+            "dimension": "Tone",
+            "viral": "Conversational",
+            "user": "Conversational",
+            "difference": "Needs simplification",
+            "status": "error"
+          },
+          {
+            "dimension": "Hashtags",
+            "viral": "7 trending",
+            "user": "5 generic",
+            "difference": "Missing trending tags",
+            "status": "error"
+          },
+          {
+            "dimension": "Media",
+            "viral": "Text",
+            "user": "Image",
+            "difference": "Use a mix of media types, such as images and videos, to keep the audience engaged.",
+            "status": "warning"
+          },
+          {
+            "dimension": "Posting Time",
+            "viral": "Optimal time",
+            "user": "Current time",
+            "difference": "Post during the best times, Tuesday-Wednesday, 8-10 AM, to maximize engagement.",
+            "status": "warning"
+          }
+        ],
+        "insights": [
+          {
+            "type": "critical",
+            "title": "Optimize Post Length",
+            "description": "120-150 words",
+            "icon": "AlertCircle"
+          },
+          {
+            "type": "critical",
+            "title": "Change Your Tone",
+            "description": "Maintain a conversational tone while incorporating more professional language",
+            "icon": "MessageSquare"
+          },
+          {
+            "type": "important",
+            "title": "Add Trending Hashtags",
+            "description": "Include trending hashtags: #jobsearch, #careeradvice, #resumebuilder",
+            "icon": "Hash"
+          },
+          {
+            "type": "suggestion",
+            "title": "Optimize Posting Time",
+            "description": "Post during the best times, Tuesday-Wednesday, 8-10 AM, to maximize engagement.",
+            "icon": "TrendingUp"
+          }
+        ],
+        "strengths": [
+          "Strong call-to-action",
+          "Good hashtag usage",
+          "Friendly and engaging tone"
+        ],
+        "improvements": [
+          "120-150 words",
+          "Maintain a conversational tone while incorporating more professional language",
+          "Add trending hashtags: #jobsearch, #careeradvice, #resumebuilder"
+        ],
+        "priority_actions": [
+          "Consider breaking up the text into smaller paragraphs and using headings to improve readability",
+          "Maintain a conversational tone while incorporating more professional language",
+          "Consider adding more trending hashtags like #jobsearch, #careeradvice, and #resumebuilder to increase engagement and reach a wider audience.",
+          "Use a mix of media types, such as images and videos, to keep the audience engaged.",
+          "Post during the best times, Tuesday-Wednesday, 8-10 AM, to maximize engagement."
+        ]
+      },
+      "timestamp": "2026-03-08T01:59:49.058207",
+      "expires_at": "2026-03-15T01:59:49.058207",
+      "cached_at": "2026-03-08 01:59:49"
+    },
+    "c5421516f4b3cf52b76954525ada716f": {
+      "post_id": "c5421516f4b3cf52b76954525ada716f",
+      "post_content_preview": "User: 𝑾𝒉𝒂𝒕 𝒉𝒂𝒑𝒑𝒆𝒏𝒔 𝒘𝒉𝒆𝒏 𝒃𝒓𝒊𝒈𝒉𝒕 𝒚𝒐𝒖𝒏𝒈 𝒎𝒊𝒏𝒅𝒔 𝒄𝒐𝒎𝒆 𝒕𝒐𝒈𝒆𝒕𝒉𝒆𝒓... vs Viral: I recently had the pleasure of visiting our Cairo ...",
+      "analysis_data": {
+        "virality_score": 25,
+        "virality_status": "Poor",
+        "structure": {
+          "user_word_count": 266,
+          "viral_word_count": 156,
+          "word_count_difference": 110,
+          "user_hook_quality": "Poor",
+          "viral_hook_quality": "Good",
+          "user_has_cta": true,
+          "viral_has_cta": true,
+          "structure_recommendation": "Break up the post into smaller paragraphs and focus on one main idea per paragraph. Use clear headings to separate sections and make the post more scannable.",
+          "optimal_length": "120-150 words"
+        },
+        "tone": {
+          "user_tone": "Formal",
+          "viral_tone": "Conversational",
+          "friendly_score": 60,
+          "persuasive_score": 80,
+          "formal_score": 90,
+          "tone_recommendation": "Consider adopting a more conversational tone to increase engagement and friendliness",
+          "needs_simplification": true
+        },
+        "hashtags": {
+          "user_hashtags": [
+            "#MultimodalAI",
+            "#Hackathon",
+            "#IITMandi",
+            "#iHub",
+            "#HCiFoundation",
+            "#AIInnovation",
+            "#BuildingTheFutureTogether"
+          ],
+          "viral_hashtags": [
+            "#Passionate",
+            "#ResultsDriven",
+            "#Collaborative",
+            "#Responsible"
+          ],
+          "user_hashtag_count": 7,
+          "viral_hashtag_count": 4,
+          "user_has_trending": false,
+          "viral_has_trending": true,
+          "missing_trending_tags": [
+            "#AI",
+            "#Innovation",
+            "#Technology"
+          ],
+          "hashtag_recommendation": "Consider adding trending hashtags like #AI, #Innovation, and #Technology to increase visibility and engagement. Also, consider using a mix of niche and broad hashtags to target specific audiences."
+        },
+        "engagement": {
+          "user_engagement_rate": "Unknown",
+          "viral_engagement_rate": "Unknown",
+          "engagement_difference": "",
+          "user_content_type": "Text",
+          "viral_content_type": "Text",
+          "media_recommendation": "",
+          "posting_time_recommendation": ""
+        },
+        "keywords": {
+          "user_primary_keywords": [
+            "Multimodal AI",
+            "Hackathon",
+            "IIT Mandi",
+            "AI Innovation"
+          ],
+          "viral_primary_keywords": [
+            "Collaboration",
+            "Empowerment",
+            "Inclusion",
+            "Learning"
+          ],
+          "user_secondary_keywords": [
+            "Technology Innovation Hub",
+            "Multimodal AI Hackathon",
+            "AI Focus",
+            "Cutting-edge ideas"
+          ],
+          "viral_secondary_keywords": [
+            "Town halls",
+            "Roundtable discussions",
+            "Global team",
+            "Local culture"
+          ],
+          "missing_keywords": [
+            "Results-driven",
+            "Responsible",
+            "Passionate",
+            "Global value creation"
+          ]
+        },
+        "comparison_table": [
+          {
+            "dimension": "Engagement Rate",
+            "viral": "Unknown",
+            "user": "Unknown",
+            "difference": "",
+            "status": "success"
+          },
+          {
+            "dimension": "Word Count",
+            "viral": "156",
+            "user": "266",
+            "difference": "+110",
+            "status": "warning"
+          },
+          {
+            "dimension": "Tone",
+            "viral": "Conversational",
+            "user": "Formal",
+            "difference": "Needs simplification",
+            "status": "error"
+          },
+          {
+            "dimension": "Hashtags",
+            "viral": "4 trending",
+            "user": "7 generic",
+            "difference": "Missing trending tags",
+            "status": "error"
+          },
+          {
+            "dimension": "Media",
+            "viral": "Text",
+            "user": "Text",
+            "difference": "",
+            "status": "success"
+          },
+          {
+            "dimension": "Posting Time",
+            "viral": "Optimal time",
+            "user": "Current time",
+            "difference": "",
+            "status": "warning"
+          }
+        ],
+        "insights": [
+          {
+            "type": "critical",
+            "title": "Optimize Post Length",
+            "description": "120-150 words",
+            "icon": "AlertCircle"
+          },
+          {
+            "type": "critical",
+            "title": "Change Your Tone",
+            "description": "Consider adopting a more conversational tone to increase engagement and friendliness",
+            "icon": "MessageSquare"
+          },
+          {
+            "type": "important",
+            "title": "Add Trending Hashtags",
+            "description": "Include trending hashtags: #AI, #Innovation, #Technology",
+            "icon": "Hash"
+          }
+        ],
+        "strengths": [
+          "Strong call-to-action",
+          "Good hashtag usage"
+        ],
+        "improvements": [
+          "120-150 words",
+          "Consider adopting a more conversational tone to increase engagement and friendliness",
+          "Add trending hashtags: #AI, #Innovation, #Technology"
+        ],
+        "priority_actions": [
+          "Break up the post into smaller paragraphs and focus on one main idea per paragraph. Use clear headings to separate sections and make the post more scannable.",
+          "Consider adopting a more conversational tone to increase engagement and friendliness",
+          "Consider adding trending hashtags like #AI, #Innovation, and #Technology to increase visibility and engagement. Also, consider using a mix of niche and broad hashtags to target specific audiences."
+        ]
+      },
+      "timestamp": "2026-03-08T09:31:58.131745",
+      "expires_at": "2026-03-15T09:31:58.131745",
+      "cached_at": "2026-03-08 09:31:58"
+    }
+  }
+}

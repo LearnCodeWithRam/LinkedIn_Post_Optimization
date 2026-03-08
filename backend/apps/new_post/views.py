@@ -1,0 +1,1314 @@
+import asyncio
+import sys
+from rest_framework import viewsets, permissions, status
+from rest_framework.response import Response
+from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.views import APIView
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+import traceback
+import threading
+from concurrent.futures import ThreadPoolExecutor
+from typing import Dict
+import uuid
+import time
+from django.conf import settings
+
+from .serializers import (
+    ChatMessageSerializer,
+    ChatResponseSerializer,
+    LinkedInPostRequestSerializer,
+    LinkedInPostResponseSerializer,
+    SimpleLinkedInPostResponseSerializer,
+    EnhancedChatMessageSerializer,
+    OptimizedPostRequestSerializer,
+    OptimizedPostResponseSerializer,
+)
+
+from .tasks import LinkedInPostChatbot, generate_post_task, parse_post_content, optimize_post_task
+from asgiref.sync import sync_to_async
+
+# Global thread pool for async operations
+executor = ThreadPoolExecutor(max_workers=10)
+
+
+class SessionManager:
+    """Thread-safe session manager for chatbots."""
+    
+    def __init__(self):
+        self.sessions: Dict[str, dict] = {}
+        self.locks: Dict[str, threading.Lock] = {}
+        self.global_lock = threading.Lock()
+    
+    def get_or_create_session(self, session_id: str, user_id: str = None):
+        """Get existing session or create new one."""
+        with self.global_lock:
+            if session_id not in self.sessions:
+                self.locks[session_id] = threading.Lock()
+                self.sessions[session_id] = {
+                    'chatbot': LinkedInPostChatbot(),
+                    'user_id': user_id,
+                    'created_at': time.time(),
+                    'last_accessed': time.time()
+                }
+            else:
+                self.sessions[session_id]['last_accessed'] = time.time()
+            
+            return self.sessions[session_id], self.locks[session_id]
+    
+    def delete_session(self, session_id: str) -> bool:
+        """Delete a session."""
+        with self.global_lock:
+            if session_id in self.sessions:
+                del self.sessions[session_id]
+                if session_id in self.locks:
+                    del self.locks[session_id]
+                return True
+            return False
+    
+    def get_session(self, session_id: str):
+        """Get existing session without creating new one."""
+        with self.global_lock:
+            if session_id in self.sessions:
+                return self.sessions[session_id], self.locks.get(session_id)
+            return None, None
+    
+    def list_sessions(self, user_id: str = None):
+        """List all sessions, optionally filtered by user_id."""
+        with self.global_lock:
+            if user_id:
+                return {
+                    sid: {
+                        'created_at': data['created_at'],
+                        'last_accessed': data['last_accessed'],
+                        'message_count': len(data['chatbot'].get_history())
+                    }
+                    for sid, data in self.sessions.items()
+                    if data.get('user_id') == user_id
+                }
+            else:
+                return {
+                    sid: {
+                        'created_at': data['created_at'],
+                        'last_accessed': data['last_accessed'],
+                        'message_count': len(data['chatbot'].get_history())
+                    }
+                    for sid, data in self.sessions.items()
+                }
+
+
+session_manager = SessionManager()
+
+
+def run_chat_in_thread(chatbot, message):
+    """
+    Execute async chat in isolated thread with PROPER HTTP client cleanup.
+    
+    CRITICAL FIX: Ensures HTTP clients are fully closed before event loop shutdown.
+    """
+    loop = None
+    try:
+        # Create new event loop
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        
+        # Set Windows policy if needed
+        if sys.platform == 'win32':
+            asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+        
+        # Run the chat coroutine
+        result = loop.run_until_complete(chatbot.chat(message))
+        
+        # CRITICAL: Cleanup HTTP client before shutting down loop
+        try:
+            loop.run_until_complete(chatbot.cleanup())
+        except:
+            pass
+        
+        # CRITICAL: Give the loop time to process any pending callbacks
+        # This allows HTTP connections to finish their cleanup
+        loop.run_until_complete(asyncio.sleep(0))
+        
+        return result
+        
+    except asyncio.CancelledError:
+        print("Chat operation was cancelled")
+        return "Chat operation was cancelled. Please try again."
+        
+    except Exception as e:
+        print(f"Error in chat: {str(e)}")
+        traceback.print_exc()
+        return f"Error: {str(e)}"
+        
+    finally:
+        # CRITICAL: Proper cleanup sequence
+        if loop is not None:
+            try:
+                # Step 1: Run one more iteration to process any pending callbacks
+                try:
+                    loop.run_until_complete(asyncio.sleep(0))
+                except:
+                    pass
+                
+                # Step 2: Cancel all pending tasks
+                pending = asyncio.all_tasks(loop)
+                for task in pending:
+                    task.cancel()
+                
+                # Step 3: Give tasks time to complete cancellation
+                if pending:
+                    try:
+                        loop.run_until_complete(
+                            asyncio.gather(*pending, return_exceptions=True)
+                        )
+                    except:
+                        pass
+                
+                # Step 4: Shutdown async generators
+                try:
+                    loop.run_until_complete(loop.shutdown_asyncgens())
+                except:
+                    pass
+                
+                # Step 5: Shutdown default executor
+                try:
+                    loop.run_until_complete(loop.shutdown_default_executor())
+                except:
+                    pass
+                
+            except Exception as cleanup_error:
+                # Suppress cleanup errors as they're expected during shutdown
+                pass
+                
+            finally:
+                # Step 6: Close the loop (suppress any errors)
+                try:
+                    if not loop.is_closed():
+                        loop.close()
+                except:
+                    pass
+                
+                # Step 7: Unset event loop from thread
+                try:
+                    asyncio.set_event_loop(None)
+                except:
+                    pass
+
+
+def run_async_task_in_thread(coro):
+    """
+    Execute any async coroutine in isolated thread with proper cleanup.
+    """
+    loop = None
+    try:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        
+        if sys.platform == 'win32':
+            asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+        
+        result = loop.run_until_complete(coro)
+        
+        # Give the loop time to process any pending callbacks
+        loop.run_until_complete(asyncio.sleep(0))
+        
+        return result
+        
+    except Exception as e:
+        print(f"Error in async task: {str(e)}")
+        traceback.print_exc()
+        raise
+        
+    finally:
+        if loop is not None:
+            try:
+                # Run one more iteration to process any pending callbacks
+                try:
+                    loop.run_until_complete(asyncio.sleep(0))
+                except:
+                    pass
+                
+                # Cancel all pending tasks
+                pending = asyncio.all_tasks(loop)
+                for task in pending:
+                    task.cancel()
+                
+                # Give tasks time to complete cancellation
+                if pending:
+                    try:
+                        loop.run_until_complete(
+                            asyncio.gather(*pending, return_exceptions=True)
+                        )
+                    except:
+                        pass
+                
+                # Shutdown async generators
+                try:
+                    loop.run_until_complete(loop.shutdown_asyncgens())
+                except:
+                    pass
+                
+                # Shutdown default executor
+                try:
+                    loop.run_until_complete(loop.shutdown_default_executor())
+                except:
+                    pass
+                
+            except Exception as cleanup_error:
+                # Suppress cleanup errors
+                pass
+                
+            finally:
+                try:
+                    if not loop.is_closed():
+                        loop.close()
+                except:
+                    pass
+                try:
+                    asyncio.set_event_loop(None)
+                except:
+                    pass
+
+
+class ChatView(APIView):
+    """Interactive chat endpoint with proper event loop management."""
+    permission_classes = []
+    
+    @swagger_auto_schema(
+        operation_description="""
+        Chat with the LinkedIn Post Bot to generate and refine posts.
+        
+        **FIXED: Proper event loop and HTTP client cleanup**
+        
+        Features:
+        - Maintains conversation context per session
+        - Thread-safe concurrent access
+        - Proper async operation cleanup
+        - No "Event loop is closed" errors
+        """,
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['message'],
+            properties={
+                'message': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='Your message to the bot'
+                ),
+                'session_id': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='Session ID (auto-generated if not provided)'
+                ),
+                'user_id': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='User ID for session tracking (optional)'
+                )
+            }
+        ),
+        responses={
+            200: openapi.Response(
+                description="Chat response",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'success': openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                        'session_id': openapi.Schema(type=openapi.TYPE_STRING),
+                        'message': openapi.Schema(type=openapi.TYPE_STRING),
+                        'response': openapi.Schema(type=openapi.TYPE_STRING),
+                        'history_length': openapi.Schema(type=openapi.TYPE_INTEGER),
+                    }
+                )
+            ),
+            400: 'Bad Request',
+            500: 'Internal Server Error'
+        },
+        tags=['LinkedIn Chatbot']
+    )
+    def post(self, request):
+        """Send a message to the chatbot with proper async handling."""
+        # Validate input
+        message = request.data.get('message')
+        if not message:
+            return Response(
+                {'error': 'Message is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Get or generate session_id
+        session_id = request.data.get('session_id')
+        user_id = request.data.get('user_id') or (
+            request.user.username if hasattr(request.user, 'username') else None
+        )
+        
+        if not session_id:
+            session_id = f"{user_id or 'anon'}_{uuid.uuid4().hex[:8]}"
+        
+        try:
+            # Get or create session
+            session_data, session_lock = session_manager.get_or_create_session(
+                session_id, user_id
+            )
+            chatbot = session_data['chatbot']
+            
+            # Execute chat with session lock
+            with session_lock:
+                # Use ThreadPoolExecutor to run in isolated thread
+                with ThreadPoolExecutor(max_workers=1) as executor:
+                    future = executor.submit(
+                        run_chat_in_thread,
+                        chatbot=chatbot,
+                        message=message
+                    )
+                    
+                    try:
+                        bot_response = future.result(timeout=120)
+                    except TimeoutError:
+                        future.cancel()
+                        return Response(
+                            {"error": "Request timed out. Please try again."},
+                            status=status.HTTP_408_REQUEST_TIMEOUT
+                        )
+                    except Exception as e:
+                        return Response(
+                            {"error": f"Error processing request: {str(e)}"},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                        )
+                
+                # Get updated history
+                history = chatbot.get_history()
+                
+                # Save to database
+                try:
+                    from .models import ChatSession, ChatMessage
+                    
+                    # Get or create session in database
+                    user = request.user if request.user.is_authenticated else None
+                    user_identifier = user_id if not user else None
+                    
+                    chat_session, created = ChatSession.objects.get_or_create(
+                        session_id=session_id,
+                        defaults={
+                            'user': user,
+                            'user_identifier': user_identifier,
+                            'title': 'New Chat'
+                        }
+                    )
+                    
+                    # Save user message
+                    user_msg = ChatMessage.objects.create(
+                        session=chat_session,
+                        role='user',
+                        content=message
+                    )
+                    print(f"✅ User message saved: {user_msg.id}")
+                    
+                    # Save assistant response
+                    assistant_msg = ChatMessage.objects.create(
+                        session=chat_session,
+                        role='assistant',
+                        content=bot_response
+                    )
+                    print(f"✅ Assistant message saved: {assistant_msg.id}")
+                    
+                    # Refresh session from database to get updated message_count
+                    chat_session.refresh_from_db()
+                    print(f"📊 Session {chat_session.session_id}: message_count={chat_session.message_count}, title='{chat_session.title}'")
+                    
+                except Exception as db_error:
+                    # Log error but don't fail the request
+                    print(f"Error saving to database: {str(db_error)}")
+                    traceback.print_exc()
+                
+                return Response({
+                    'success': True,
+                    'session_id': session_id,
+                    'message': message,
+                    'response': bot_response,
+                    'history_length': len(history),
+                })
+        
+        except Exception as e:
+            print(f"Unexpected error in ChatView: {str(e)}")
+            traceback.print_exc()
+            return Response(
+                {"error": f"Server error: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class GeneratePostView(APIView):
+    """Generate a complete LinkedIn post."""
+    permission_classes = []
+    
+    @swagger_auto_schema(
+        operation_description="Generate a complete, structured LinkedIn post",
+        request_body=LinkedInPostRequestSerializer,
+        responses={200: LinkedInPostResponseSerializer},
+        tags=['LinkedIn Post Generation']
+    )
+    def post(self, request):
+        """Generate a structured LinkedIn post."""
+        serializer = LinkedInPostRequestSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                {'error': 'Invalid parameters', 'details': serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        validated_data = serializer.validated_data
+        
+        try:
+            with ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(
+                    run_async_task_in_thread,
+                    generate_post_task(
+                        topic=validated_data['topic'],
+                        context=validated_data.get('context'),
+                        target_audience=validated_data.get('target_audience'),
+                        tone_preference=validated_data.get('tone_preference'),
+                        include_personal_story=validated_data.get('include_personal_story', False)
+                    )
+                )
+                
+                try:
+                    post_draft = future.result(timeout=120)
+                except TimeoutError:
+                    future.cancel()
+                    return Response(
+                        {"error": "Generation timed out. Please try again."},
+                        status=status.HTTP_408_REQUEST_TIMEOUT
+                    )
+            
+            response_data = {
+                'hook': post_draft.hook,
+                'main_content': post_draft.main_content,
+                'cta': post_draft.cta,
+                'hashtags': post_draft.hashtags,
+                'formatting_notes': post_draft.formatting_notes,
+                'engagement_score': post_draft.engagement_score,
+                'algorithm_compliance': post_draft.algorithm_compliance,
+                'final_post': post_draft.final_post,
+                'improvement_suggestions': post_draft.improvement_suggestions,
+                'word_count': len(post_draft.final_post.split()),
+                'character_count': len(post_draft.final_post),
+                'topic': validated_data['topic']
+            }
+            
+            return Response({'success': True, 'data': response_data})
+            
+        except Exception as e:
+            print(f"Error in GeneratePostView: {str(e)}")
+            traceback.print_exc()
+            return Response(
+                {'error': 'Post generation failed', 'message': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+
+
+class OptimizedGenerateView(APIView):
+    """Optimize a LinkedIn post based on AI analysis."""
+    permission_classes = []
+    
+    @swagger_auto_schema(
+        operation_description="Optimize a LinkedIn post based on AI analysis recommendations",
+        request_body=OptimizedPostRequestSerializer,
+        responses={200: OptimizedPostResponseSerializer},
+        tags=['LinkedIn Post Generation']
+    )
+    def post(self, request):
+        """Generate an optimized version of a post."""
+        serializer = OptimizedPostRequestSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                {'error': 'Invalid parameters', 'details': serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        validated_data = serializer.validated_data
+        original_post = validated_data['original_post']
+        analysis_data = validated_data['analysis_data']
+        post_id = validated_data.get('post_id', '')
+        
+        # Check cache if post_id provided
+        if post_id:
+            from django.core.cache import cache
+            cache_key = f"optimized_post_{post_id}"
+            cached_result = cache.get(cache_key)
+            
+            if cached_result:
+                print(f"✓ Returning cached optimized post for: {post_id}")
+                return Response({
+                    'success': True,
+                    'data': cached_result,
+                    'cached': True
+                })
+        
+        try:
+            # Run optimization task
+            with ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(
+                    run_async_task_in_thread,
+                    optimize_post_task(
+                        original_post=original_post,
+                        analysis_data=analysis_data
+                    )
+                )
+                
+                try:
+                    result = future.result(timeout=120)
+                except TimeoutError:
+                    future.cancel()
+                    return Response(
+                        {"error": "Optimization timed out. Please try again."},
+                        status=status.HTTP_408_REQUEST_TIMEOUT
+                    )
+            
+            # Cache the result if post_id provided
+            if post_id:
+                from django.core.cache import cache
+                cache_key = f"optimized_post_{post_id}"
+                cache.set(cache_key, result, timeout=86400)  # 24 hours
+                print(f"✓ Cached optimized post for: {post_id}")
+            
+            return Response({
+                'success': True,
+                'data': result,
+                'cached': False
+            })
+            
+        except Exception as e:
+            print(f"Error in OptimizedGenerateView: {str(e)}")
+            traceback.print_exc()
+            return Response(
+                {'error': 'Post optimization failed', 'message': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class QuickGenerateView(APIView):
+    """Quick post generation."""
+    permission_classes = []
+    
+    @swagger_auto_schema(
+        operation_description="Quick post generation",
+        request_body=LinkedInPostRequestSerializer,
+        responses={200: SimpleLinkedInPostResponseSerializer},
+        tags=['LinkedIn Post Generation']
+    )
+    def post(self, request):
+        """Generate a post quickly."""
+        serializer = LinkedInPostRequestSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                {'error': 'Invalid parameters', 'details': serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        validated_data = serializer.validated_data
+        
+        try:
+            with ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(
+                    run_async_task_in_thread,
+                    generate_post_task(
+                        topic=validated_data['topic'],
+                        context=validated_data.get('context'),
+                        target_audience=validated_data.get('target_audience'),
+                        tone_preference=validated_data.get('tone_preference'),
+                        include_personal_story=validated_data.get('include_personal_story', False)
+                    )
+                )
+                
+                post_draft = future.result(timeout=120)
+            
+            return Response({
+                'success': True,
+                'data': {
+                    'final_post': post_draft.final_post,
+                    'hashtags': post_draft.hashtags,
+                    'word_count': len(post_draft.final_post.split()),
+                    'character_count': len(post_draft.final_post),
+                    'topic': validated_data['topic']
+                }
+            })
+            
+        except Exception as e:
+            return Response(
+                {'error': 'Post generation failed', 'message': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class ChatHistoryView(APIView):
+    """Get conversation history."""
+    permission_classes = []
+    
+    @swagger_auto_schema(
+        operation_description="Get conversation history",
+        manual_parameters=[
+            openapi.Parameter(
+                'session_id', openapi.IN_QUERY,
+                description="Session ID", type=openapi.TYPE_STRING, required=True
+            )
+        ],
+        responses={200: "Conversation history", 404: 'Session not found'},
+        tags=['LinkedIn Chatbot']
+    )
+    def get(self, request):
+        """Get conversation history."""
+        session_id = request.query_params.get('session_id')
+        
+        if not session_id:
+            return Response(
+                {'error': 'session_id is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        session_data, session_lock = session_manager.get_session(session_id)
+        
+        if session_data:
+            with session_lock:
+                history = session_data['chatbot'].get_history()
+            
+            return Response({
+                'success': True,
+                'session_id': session_id,
+                'history': history,
+                'message_count': len(history),
+                'created_at': session_data.get('created_at'),
+                'last_accessed': session_data.get('last_accessed')
+            })
+        else:
+            return Response(
+                {'error': 'Session not found', 'session_id': session_id},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+
+class ResetChatView(APIView):
+    """Reset a chat session."""
+    permission_classes = []
+    
+    @swagger_auto_schema(
+        operation_description="Reset a chat session",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['session_id'],
+            properties={
+                'session_id': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='Session ID to reset'
+                )
+            }
+        ),
+        responses={200: 'Session reset', 404: 'Session not found'},
+        tags=['LinkedIn Chatbot']
+    )
+    def post(self, request):
+        """Reset a chat session."""
+        session_id = request.data.get('session_id')
+        
+        if not session_id:
+            return Response(
+                {'error': 'session_id is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        if session_manager.delete_session(session_id):
+            return Response({
+                'success': True,
+                'message': f'Session {session_id} deleted successfully',
+                'session_id': session_id
+            })
+        else:
+            return Response(
+                {'error': 'Session not found', 'session_id': session_id},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+
+class ListSessionsView(APIView):
+    """List all active sessions."""
+    permission_classes = []
+    
+    @swagger_auto_schema(
+        operation_description="List all active sessions",
+        manual_parameters=[
+            openapi.Parameter(
+                'user_id', openapi.IN_QUERY,
+                description="User ID", type=openapi.TYPE_STRING, required=False
+            )
+        ],
+        responses={200: 'List of sessions'},
+        tags=['LinkedIn Chatbot']
+    )
+    def get(self, request):
+        """List all sessions."""
+        user_id = request.query_params.get('user_id')
+        sessions = session_manager.list_sessions(user_id)
+        
+        return Response({
+            'success': True,
+            'sessions': sessions,
+            'total_count': len(sessions)
+        })
+
+
+# ============================================
+# CHAT HISTORY PERSISTENCE VIEWS
+# ============================================
+
+class ListUserChatSessionsView(APIView):
+    """List all chat sessions for a user (from database)."""
+    permission_classes = []
+    
+    @swagger_auto_schema(
+        operation_description="Get all chat sessions for the current user or anonymous identifier",
+        manual_parameters=[
+            openapi.Parameter(
+                'user_identifier', openapi.IN_QUERY,
+                description="Anonymous user identifier (if not authenticated)", 
+                type=openapi.TYPE_STRING, 
+                required=False
+            )
+        ],
+        responses={200: 'List of chat sessions'},
+        tags=['Chat History']
+    )
+    def get(self, request):
+        """List all chat sessions for a user."""
+        from .models import ChatSession
+        from .serializers import ChatSessionListSerializer
+        
+        # Get user or anonymous identifier
+        user = request.user if request.user.is_authenticated else None
+        user_identifier = request.query_params.get('user_identifier')
+        
+        # Query sessions
+        if user:
+            sessions = ChatSession.objects.filter(user=user, is_active=True)
+        elif user_identifier:
+            sessions = ChatSession.objects.filter(
+                user_identifier=user_identifier, 
+                is_active=True
+            )
+        else:
+            return Response(
+                {'error': 'User must be authenticated or provide user_identifier'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Serialize and return
+        serializer = ChatSessionListSerializer(sessions, many=True)
+        return Response({
+            'success': True,
+            'sessions': serializer.data,
+            'total_count': sessions.count()
+        })
+
+
+class LoadChatSessionView(APIView):
+    """Load a specific chat session with all messages."""
+    permission_classes = []
+    
+    @swagger_auto_schema(
+        operation_description="Load a chat session with all its messages",
+        responses={200: 'Chat session with messages', 404: 'Session not found'},
+        tags=['Chat History']
+    )
+    def get(self, request, session_id):
+        """Load a chat session."""
+        from .models import ChatSession
+        from .serializers import ChatSessionDetailSerializer
+        
+        try:
+            # Get session
+            user = request.user if request.user.is_authenticated else None
+            user_identifier = request.query_params.get('user_identifier')
+            
+            if user:
+                session = ChatSession.objects.prefetch_related('messages').get(
+                    session_id=session_id,
+                    user=user,
+                    is_active=True
+                )
+            elif user_identifier:
+                session = ChatSession.objects.prefetch_related('messages').get(
+                    session_id=session_id,
+                    user_identifier=user_identifier,
+                    is_active=True
+                )
+            else:
+                return Response(
+                    {'error': 'User must be authenticated or provide user_identifier'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Serialize and return
+            serializer = ChatSessionDetailSerializer(session)
+            return Response({
+                'success': True,
+                'session': serializer.data
+            })
+            
+        except ChatSession.DoesNotExist:
+            return Response(
+                {'error': 'Session not found', 'session_id': session_id},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+
+class DeleteChatSessionView(APIView):
+    """Delete a chat session."""
+    permission_classes = []
+    
+    @swagger_auto_schema(
+        operation_description="Delete a chat session (soft delete)",
+        responses={200: 'Session deleted', 404: 'Session not found'},
+        tags=['Chat History']
+    )
+    def delete(self, request, session_id):
+        """Delete a chat session."""
+        from .models import ChatSession
+        
+        try:
+            # Get session
+            user = request.user if request.user.is_authenticated else None
+            user_identifier = request.query_params.get('user_identifier')
+            
+            if user:
+                session = ChatSession.objects.get(
+                    session_id=session_id,
+                    user=user,
+                    is_active=True
+                )
+            elif user_identifier:
+                session = ChatSession.objects.get(
+                    session_id=session_id,
+                    user_identifier=user_identifier,
+                    is_active=True
+                )
+            else:
+                return Response(
+                    {'error': 'User must be authenticated or provide user_identifier'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Soft delete
+            session.soft_delete()
+            
+            # Also delete from in-memory session manager if exists
+            session_manager.delete_session(session_id)
+            
+            return Response({
+                'success': True,
+                'message': f'Session {session_id} deleted successfully',
+                'session_id': session_id
+            })
+            
+        except ChatSession.DoesNotExist:
+            return Response(
+                {'error': 'Session not found', 'session_id': session_id},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+
+class UpdateSessionTitleView(APIView):
+    """Update a chat session's title."""
+    permission_classes = []
+    
+    @swagger_auto_schema(
+        operation_description="Update a chat session's title",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['title'],
+            properties={
+                'title': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='New title for the session'
+                )
+            }
+        ),
+        responses={200: 'Title updated', 404: 'Session not found'},
+        tags=['Chat History']
+    )
+    def patch(self, request, session_id):
+        """Update session title."""
+        from .models import ChatSession
+        from .serializers import UpdateSessionTitleSerializer
+        
+        serializer = UpdateSessionTitleSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                {'error': 'Invalid data', 'details': serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            # Get session
+            user = request.user if request.user.is_authenticated else None
+            user_identifier = request.query_params.get('user_identifier')
+            
+            if user:
+                session = ChatSession.objects.get(
+                    session_id=session_id,
+                    user=user,
+                    is_active=True
+                )
+            elif user_identifier:
+                session = ChatSession.objects.get(
+                    session_id=session_id,
+                    user_identifier=user_identifier,
+                    is_active=True
+                )
+            else:
+                return Response(
+                    {'error': 'User must be authenticated or provide user_identifier'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Update title
+            session.title = serializer.validated_data['title']
+            session.save(update_fields=['title', 'updated_at'])
+            
+            return Response({
+                'success': True,
+                'message': 'Title updated successfully',
+                'session_id': session_id,
+                'title': session.title
+            })
+            
+        except ChatSession.DoesNotExist:
+            return Response(
+                {'error': 'Session not found', 'session_id': session_id},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+
+@api_view(['GET'])
+def health_check(request):
+    """Health check endpoint."""
+    return Response({
+        'status': 'healthy',
+        'service': 'LinkedIn Post Chatbot',
+        'version': '5.2-FIXED',
+        'fixes': [
+            'Event loop proper cleanup',
+            'HTTP client connection cleanup',
+            'Async generator shutdown',
+            'Default executor shutdown',
+            'No more "Event loop is closed" errors'
+        ],
+        'active_sessions': len(session_manager.sessions)
+    })
+
+
+@api_view(['GET'])
+def bot_info(request):
+    """Bot information."""
+    return Response({
+        'bot_name': 'LinkedIn Post Bot',
+        'version': '5.2-FIXED',
+        'critical_fixes': [
+            'Fixed "Event loop is closed" error completely',
+            'Proper HTTP client cleanup (httpx/httpcore)',
+            'Enhanced async operation management',
+            'Thread-safe session handling'
+        ],
+        'capabilities': [
+            'Generate LinkedIn posts',
+            'Refine posts iteratively',
+            'Maintain conversation context',
+            'Handle concurrent requests safely'
+        ]
+    })
+
+
+
+@api_view(['GET'])
+def diagnostic_info(request):
+    """
+    Diagnostic endpoint to check system configuration
+    """
+    import platform
+    permission_classes = []
+    # Get event loop policy
+    try:
+        loop_policy = asyncio.get_event_loop_policy()
+        loop_policy_name = type(loop_policy).__name__
+    except Exception as e:
+        loop_policy_name = f"Error: {str(e)}"
+    
+    # Check if we're on Windows
+    is_windows = sys.platform == 'win32'
+    
+    # Check current thread
+    current_thread = threading.current_thread()
+    
+    # Python version
+    python_version = sys.version
+    
+    # Check if event loop exists in current thread
+    try:
+        current_loop = asyncio.get_event_loop()
+        has_loop = current_loop is not None
+        loop_running = current_loop.is_running() if has_loop else False
+        loop_closed = current_loop.is_closed() if has_loop else None
+    except RuntimeError as e:
+        has_loop = False
+        loop_running = False
+        loop_closed = None
+    
+    diagnostic_data = {
+        'system': {
+            'platform': platform.system(),
+            'platform_release': platform.release(),
+            'python_version': python_version,
+            'is_windows': is_windows,
+        },
+        'asyncio': {
+            'event_loop_policy': loop_policy_name,
+            'has_event_loop_in_main_thread': has_loop,
+            'loop_running': loop_running,
+            'loop_closed': loop_closed,
+        },
+        'threading': {
+            'current_thread_name': current_thread.name,
+            'is_main_thread': current_thread == threading.main_thread(),
+            'active_thread_count': threading.active_count(),
+        },
+        'sessions': {
+            'active_sessions': len(session_manager.sessions),
+            'session_ids': list(session_manager.sessions.keys())[:5],  # First 5
+        },
+        'recommendations': []
+    }
+    
+    # Add recommendations based on findings
+    if is_windows and loop_policy_name != 'WindowsSelectorEventLoopPolicy':
+        diagnostic_data['recommendations'].append(
+            'Windows detected but not using WindowsSelectorEventLoopPolicy. This may cause issues.'
+        )
+    
+    if has_loop and loop_running:
+        diagnostic_data['recommendations'].append(
+            'WARNING: Event loop is running in main thread. This should not happen in Django views.'
+        )
+    
+    if has_loop and loop_closed:
+        diagnostic_data['recommendations'].append(
+            'ERROR: Event loop in main thread is closed. This is likely causing your issues.'
+        )
+    
+    if not diagnostic_data['recommendations']:
+        diagnostic_data['recommendations'].append('System configuration looks good.')
+    
+    return Response(diagnostic_data)
+
+
+@api_view(['POST'])
+def test_async_operation(request):
+    """
+    Test endpoint to verify async operations work correctly
+    """
+    import time
+    from concurrent.futures import ThreadPoolExecutor
+    
+    test_message = request.data.get('message', 'test message')
+    
+    def test_async_in_thread():
+        """Test async operation in isolated thread"""
+        loop = None
+        try:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            
+            async def simple_async_operation():
+                await asyncio.sleep(0.1)
+                return f"Successfully processed: {test_message}"
+            
+            result = loop.run_until_complete(simple_async_operation())
+            return {'success': True, 'result': result}
+            
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+            
+        finally:
+            if loop is not None:
+                try:
+                    # Proper cleanup
+                    pending = asyncio.all_tasks(loop)
+                    for task in pending:
+                        task.cancel()
+                    
+                    if pending:
+                        loop.run_until_complete(
+                            asyncio.gather(*pending, return_exceptions=True)
+                        )
+                    
+                    loop.run_until_complete(loop.shutdown_asyncgens())
+                    loop.run_until_complete(asyncio.sleep(0.01))
+                    loop.run_until_complete(loop.shutdown_default_executor())
+                    loop.close()
+                except Exception as cleanup_error:
+                    print(f"Cleanup error: {cleanup_error}")
+                finally:
+                    asyncio.set_event_loop(None)
+    
+    start_time = time.time()
+    
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        future = executor.submit(test_async_in_thread)
+        result = future.result(timeout=10)
+    
+    duration = (time.time() - start_time) * 1000  # Convert to ms
+    
+    result['duration_ms'] = duration
+    result['test_message'] = test_message
+    
+    return Response(result)
+
+# ============================================
+# DRAFT POST VIEWS
+# ============================================
+
+class SaveDraftView(APIView):
+    """Save or update a draft post."""
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def post(self, request):
+        """Save a new draft or update existing one."""
+        from .models import DraftPost
+        from .serializers import DraftPostSerializer
+        
+        # Get authenticated user
+        user = request.user
+        
+        # Get draft ID if updating
+        draft_id = request.data.get('draft_id')
+        
+        try:
+            if draft_id:
+                # Update existing draft
+                draft = DraftPost.objects.get(id=draft_id, user=user)
+                draft.content = request.data.get('content', draft.content)
+                draft.media_files = request.data.get('media_files', draft.media_files)
+                draft.scheduled_time = request.data.get('scheduled_time', draft.scheduled_time)
+                draft.poll_data = request.data.get('poll_data', draft.poll_data)
+                draft.save()
+                message = 'Draft updated successfully'
+            else:
+                # Create new draft
+                draft = DraftPost.objects.create(
+                    user=user,
+                    content=request.data.get('content', ''),
+                    media_files=request.data.get('media_files'),
+                    scheduled_time=request.data.get('scheduled_time'),
+                    poll_data=request.data.get('poll_data'),
+                    status='draft'
+                )
+                message = 'Draft saved successfully'
+            
+            serializer = DraftPostSerializer(draft)
+            return Response({
+                'success': True,
+                'message': message,
+                'draft': serializer.data
+            })
+            
+        except DraftPost.DoesNotExist:
+            return Response(
+                {'error': 'Draft not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            return Response(
+                {'error': f'Failed to save draft: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class ListDraftsView(APIView):
+    """List all drafts for the current user."""
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request):
+        """Get all drafts and published posts for user."""
+        from .models import DraftPost
+        from .serializers import DraftPostSerializer
+        
+        user = request.user
+        
+        # Get filter parameter
+        status_filter = request.query_params.get('status', 'all')
+        
+        if status_filter == 'draft':
+            posts = DraftPost.objects.filter(user=user, status='draft', is_active=True)
+        elif status_filter == 'published':
+            posts = DraftPost.objects.filter(user=user, status='published', is_active=True)
+        else:
+            posts = DraftPost.objects.filter(user=user, is_active=True)
+        
+        serializer = DraftPostSerializer(posts, many=True)
+        return Response({
+            'success': True,
+            'posts': serializer.data,
+            'total_count': posts.count()
+        })
+
+
+class PublishDraftView(APIView):
+    """Publish a draft post."""
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def post(self, request, draft_id):
+        """Mark a draft as published."""
+        from .models import DraftPost
+        from .serializers import DraftPostSerializer
+        
+        user = request.user
+        
+        try:
+            draft = DraftPost.objects.get(id=draft_id, user=user, is_active=True)
+            draft.publish()
+            
+            serializer = DraftPostSerializer(draft)
+            return Response({
+                'success': True,
+                'message': 'Draft published successfully',
+                'post': serializer.data
+            })
+            
+        except DraftPost.DoesNotExist:
+            return Response(
+                {'error': 'Draft not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+
+class DeleteDraftView(APIView):
+    """Delete a draft post."""
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def delete(self, request, draft_id):
+        """Soft delete a draft."""
+        from .models import DraftPost
+        
+        user = request.user
+        
+        try:
+            draft = DraftPost.objects.get(id=draft_id, user=user, is_active=True)
+            draft.soft_delete()
+            
+            return Response({
+                'success': True,
+                'message': 'Draft deleted successfully'
+            })
+            
+        except DraftPost.DoesNotExist:
+            return Response(
+                {'error': 'Draft not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+

@@ -1,0 +1,167 @@
+// Intelligent Comparison UI Component
+// This replaces lines 618-690 in ViralpostAnalysis.tsx
+
+<div className="py-4 space-y-6">
+  {intelligentComparison && (
+    <>
+      {/* Virality Score Comparison */}
+      <div className="bg-gradient-to-r from-[#ff6700] to-[#0d569e] rounded-xl shadow-lg p-6 text-white">
+        <h2 className="text-2xl font-bold mb-6">Intelligent Virality Comparison</h2>
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Your Post Score */}
+          <div className={`bg-white/10 backdrop-blur-sm rounded-xl p-6 border-2 ${intelligentComparison.betterPost === 'user' ? 'border-yellow-300' : 'border-white/20'}`}>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-lg font-semibold">Your LinkedIn Post</h3>
+              {intelligentComparison.betterPost === 'user' && (
+                <span className="text-3xl">🏆</span>
+              )}
+            </div>
+            <div className="text-5xl font-bold mb-2">{intelligentComparison.userScore}%</div>
+            <div className="text-sm opacity-90">Virality Score</div>
+          </div>
+
+          {/* Viral Post Score */}
+          <div className={`bg-white/10 backdrop-blur-sm rounded-xl p-6 border-2 ${intelligentComparison.betterPost === 'viral' ? 'border-yellow-300' : 'border-white/20'}`}>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-lg font-semibold">Viral Post</h3>
+              {intelligentComparison.betterPost === 'viral' && (
+                <span className="text-3xl">🏆</span>
+              )}
+            </div>
+            <div className="text-5xl font-bold mb-2">{intelligentComparison.viralScore}%</div>
+            <div className="text-sm opacity-90">Virality Score</div>
+          </div>
+        </div>
+        
+        <div className="mt-6 text-center">
+          <p className="text-lg">
+            {intelligentComparison.betterPost === 'user' 
+              ? `🎉 Your post is ${intelligentComparison.scoreDifference.toFixed(1)}% more viral!`
+              : `The viral post is ${intelligentComparison.scoreDifference.toFixed(1)}% ahead`
+            }
+          </p>
+        </div>
+      </div>
+
+      {/* Do's and Don'ts */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Do's - Best Practices */}
+        <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl shadow-lg border-2 border-green-200 p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-3 bg-green-500 rounded-full">
+              <CheckCircle className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900">✅ Do's</h3>
+              <p className="text-sm text-gray-600">
+                Best practices from the {intelligentComparison.betterPost === 'user' ? 'better-performing post (yours!)' : 'viral post'}
+              </p>
+            </div>
+          </div>
+          <ul className="space-y-3">
+            {intelligentComparison.dos.map((item, idx) => (
+              <li key={idx} className="flex items-start gap-3 bg-white p-4 rounded-lg border border-green-200">
+                <span className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                  {idx + 1}
+                </span>
+                <span className="text-gray-700 flex-1">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Don'ts - Things to Avoid */}
+        <div className="bg-gradient-to-br from-red-50 to-pink-50 rounded-2xl shadow-lg border-2 border-red-200 p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-3 bg-red-500 rounded-full">
+              <X className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900">❌ Don'ts</h3>
+              <p className="text-sm text-gray-600">
+                Things to avoid from the {intelligentComparison.betterPost === 'user' ? 'viral post' : 'lower-performing post (yours)'}
+              </p>
+            </div>
+          </div>
+          <ul className="space-y-3">
+            {intelligentComparison.donts.map((item, idx) => (
+              <li key={idx} className="flex items-start gap-3 bg-white p-4 rounded-lg border border-red-200">
+                <span className="flex-shrink-0 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                  {idx + 1}
+                </span>
+                <span className="text-gray-700 flex-1">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {/* Metric-by-Metric Comparison */}
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+        <div className="flex items-center gap-2 mb-6">
+          <BarChart3 className="w-6 h-6 text-blue-600" />
+          <h2 className="text-2xl font-bold text-gray-900">Metric-by-Metric Analysis</h2>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b-2 border-gray-200">
+                <th className="text-left py-4 px-4 font-semibold text-gray-700">Metric</th>
+                <th className="text-left py-4 px-4 font-semibold text-blue-600">Your Post</th>
+                <th className="text-left py-4 px-4 font-semibold text-purple-600">Viral Post</th>
+                <th className="text-left py-4 px-4 font-semibold text-gray-700">Winner</th>
+                <th className="text-left py-4 px-4 font-semibold text-gray-700">Difference</th>
+              </tr>
+            </thead>
+            <tbody>
+              {intelligentComparison.metricComparison.map((row, idx) => (
+                <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                  <td className="py-4 px-4 font-medium text-gray-900">{row.metric}</td>
+                  <td className={`py-4 px-4 ${row.winner === 'user' ? 'text-blue-700 font-bold' : 'text-blue-600'}`}>
+                    {row.userValue}
+                    {row.winner === 'user' && <span className="ml-2">🏆</span>}
+                  </td>
+                  <td className={`py-4 px-4 ${row.winner === 'viral' ? 'text-purple-700 font-bold' : 'text-purple-600'}`}>
+                    {row.viralValue}
+                    {row.winner === 'viral' && <span className="ml-2">🏆</span>}
+                  </td>
+                  <td className="py-4 px-4">
+                    <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${
+                      row.winner === 'user' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'
+                    }`}>
+                      {row.winner === 'user' ? 'Your Post' : 'Viral Post'}
+                    </span>
+                  </td>
+                  <td className="py-4 px-4 text-gray-600">{row.difference}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </>
+  )}
+
+  {/* Keep existing sections below */}
+  <div className="grid md:grid-cols-2 gap-8">
+    {/* Tone of Voice */}
+    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+      <h3 className="text-xl font-bold text-gray-900 mb-4">Tone of Voice</h3>
+      <div className="space-y-4">
+        {[
+          { label: 'Friendly', value: comparisonResult.tone.friendly_score, color: 'blue-600' },
+          { label: 'Persuasive', value: comparisonResult.tone.persuasive_score, color: 'pink-400' },
+          { label: 'Formal', value: comparisonResult.tone.formal_score, color: 'orange-500' }
+        ].map((tone, i) => (
+          <div key={i}>
+            <div className="flex justify-between mb-2">
+              <span className={`text-sm font-medium text-${tone.color}`}>{tone.label}</span>
+              <span className="text-sm font-bold text-gray-900">{tone.value}%</span>
+            </div>
+            <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div className={`h-full bg-${tone.color} rounded-full`} style={{ width: `${tone.value}%` }} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>

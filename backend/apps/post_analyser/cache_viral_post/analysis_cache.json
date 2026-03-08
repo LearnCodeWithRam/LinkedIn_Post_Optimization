@@ -1,0 +1,282 @@
+{
+  "version": "1.0.0",
+  "analyses": {
+    "viral_000": {
+      "post_id": "viral_000",
+      "post_content_preview": "Don't miss 𝐥𝐢𝐟𝐞-𝐜𝐡𝐚𝐧𝐠𝐢𝐧𝐠 𝐨𝐩𝐩𝐨𝐫𝐭𝐮𝐧𝐢𝐭𝐢𝐞𝐬 again...\n\nFix these 4 Resume Killers Before You Hit 𝐀𝐩𝐩𝐥𝐲 🚫 \n\nHere is a tool that can create a professional high scored ATS resume in less than 90 seconds.\n\n 🔗 h",
+      "analysis_data": {
+        "structure": {
+          "hook_length": 49,
+          "hook_quality": "Good",
+          "rehook_present": true,
+          "main_content_length": 953,
+          "has_wrap_up": true,
+          "has_cta": true,
+          "structure_score": "Good",
+          "recommendations": [
+            "Use a more attention-grabbing hook",
+            "Consider adding a brief summary at the beginning",
+            "Use a more consistent formatting style",
+            "Add more visuals to break up the text",
+            "Use a clear and concise call-to-action",
+            "Consider adding a second CTA",
+            "Use relevant and specific hashtags",
+            "Tag relevant people or companies",
+            "Optimize for SEO by using relevant keywords",
+            "Use a more conversational tone",
+            "Consider adding a question or poll to increase engagement"
+          ]
+        },
+        "hashtags": {
+          "hashtags_found": [
+            "#jobseekers",
+            "#freshershiring",
+            "#ATSResume",
+            "#JobSearchTips",
+            "#ResumeHelp",
+            "#ResumeBuilder",
+            "#ResumeTips"
+          ],
+          "hashtag_count": 7,
+          "relevance_score": "High",
+          "spam_risk": "Low",
+          "has_broad_hashtags": true,
+          "has_niche_hashtags": true,
+          "placement_quality": "Natural",
+          "recommendations": [
+            "Use a mix of broad and niche hashtags to increase visibility and engagement",
+            "Consider adding more relevant hashtags to the post, such as #careeradvice or #jobsearch",
+            "Use a consistent tone and language throughout the post to improve engagement and readability",
+            "Tag relevant people or companies in the post to increase engagement and reach",
+            "Consider adding a call-to-action (CTA) to the post to encourage users to take a specific action",
+            "Use a clear and concise title for the post to improve visibility and engagement",
+            "Consider adding a visual element, such as an image or video, to the post to increase engagement and shareability"
+          ]
+        },
+        "analytics": {
+          "overall_sentiment": "Positive",
+          "engagement_potential": "High",
+          "expected_impressions": "8.50% of followers",
+          "expected_engagement_rate": "12.50%",
+          "content_type": "Carousel",
+          "strengths": [
+            "Eye-catching visuals",
+            "Relevant hashtags",
+            "Call-to-action buttons",
+            "Keyword optimization"
+          ],
+          "weaknesses": [
+            "Long post",
+            "Too many links",
+            "Lack of people tagging"
+          ],
+          "improvement_suggestions": [
+            "Break up the post into smaller sections",
+            "Use a more concise and focused message",
+            "Tag relevant people and influencers",
+            "Use a more consistent tone and language"
+          ]
+        },
+        "tagging": {
+          "tags_found": [
+            "#jobseekers",
+            "#freshershiring",
+            "#ATSResume",
+            "#JobSearchTips",
+            "#ResumeHelp",
+            "#ResumeBuilder",
+            "#ResumeTips"
+          ],
+          "tag_count": 7,
+          "tagging_quality": "Good",
+          "has_context": true,
+          "spam_risk": "Low",
+          "recommendations": [
+            "Consider using a more specific and relevant hashtag for the content, such as #ResumeOptimization or #JobApplicationTips",
+            "Add a brief description or context for the tagged accounts to provide more value to the audience",
+            "Use a mix of niche and broad hashtags to reach a wider audience",
+            "Consider creating a branded hashtag for your content and encouraging users to share their own experiences and tips",
+            "Use relevant keywords from the content in the hashtags to improve SEO and visibility"
+          ]
+        },
+        "keywords": {
+          "primary_keywords": [
+            "Resume",
+            "Job Search",
+            "ATS",
+            "Job Seekers",
+            "Career"
+          ],
+          "keyword_density": {
+            "Resume": 2.5,
+            "Job": 2.2,
+            "ATS": 1.8,
+            "Job Seekers": 1.5,
+            "Career": 1.2
+          },
+          "trending_keywords": [
+            "Generative AI",
+            "AI Developer",
+            "Machine Learning",
+            "Python",
+            "Cybersecurity"
+          ],
+          "trending_keyword_count": 7,
+          "seo_score": "Good",
+          "keyword_relevance": "High",
+          "search_visibility_score": 82,
+          "tone_analysis": {
+            "friendly_score": 80,
+            "persuasive_score": 60,
+            "formal_score": 40,
+            "tone_recommendation": "Balance friendly and persuasive tone",
+            "needs_simplification": false
+          },
+          "missing_keywords": [
+            "Job Interview",
+            "Career Development",
+            "Professional Development"
+          ],
+          "keyword_placement_quality": "Natural",
+          "recommendations": [
+            "Use more specific job titles and industries",
+            "Add more relevant hashtags",
+            "Use a more conversational tone",
+            "Include a clear call-to-action",
+            "Use a more attention-grabbing title"
+          ]
+        },
+        "overall_score": "Excellent",
+        "virality_score": 89,
+        "priority_actions": [
+          "Use a more attention-grabbing hook",
+          "Consider adding a brief summary at the beginning",
+          "Use a mix of broad and niche hashtags to increase visibility and engagement",
+          "Break up the post into smaller sections",
+          "Use more specific job titles and industries"
+        ]
+      },
+      "timestamp": "2026-03-08T01:54:17.900178",
+      "expires_at": "2026-03-15T01:54:17.900178",
+      "cached_at": "2026-03-08 01:54:17"
+    },
+    "viral_001": {
+      "post_id": "viral_001",
+      "post_content_preview": "I recently had the pleasure of visiting our Cairo office together with my colleagues Wadii El Karkouri and Grunde Rønholt. From the moment we arrived, we were welcomed by our passionate local team eag",
+      "analysis_data": {
+        "structure": {
+          "hook_length": 56,
+          "hook_quality": "Good",
+          "rehook_present": false,
+          "main_content_length": 346,
+          "has_wrap_up": true,
+          "has_cta": false,
+          "structure_score": "Good",
+          "recommendations": [
+            "Use a more attention-grabbing hook (49 characters) to increase engagement",
+            "Add a re-hook (51 characters) to reinforce the opening and maintain reader interest",
+            "Break up long paragraphs into 1-3 sentences for improved readability",
+            "Use white space effectively to create a clean and easy-to-read format",
+            "Consider adding a clear call-to-action (CTA) to drive engagement and conversions",
+            "Use relevant and specific hashtags to increase post visibility and engagement",
+            "Tag the people mentioned in the post to increase engagement and encourage sharing",
+            "Optimize the post for SEO by including relevant keywords and phrases",
+            "Use a more conversational tone to increase engagement and reader resonance",
+            "Consider adding trending words and phrases to increase post visibility and engagement"
+          ]
+        },
+        "hashtags": {
+          "hashtags_found": [
+            "#TGS",
+            "#Passionate",
+            "#ResultsDriven",
+            "#Collaborative",
+            "#Responsible"
+          ],
+          "hashtag_count": 5,
+          "relevance_score": "Low",
+          "spam_risk": "Low",
+          "has_broad_hashtags": true,
+          "has_niche_hashtags": false,
+          "placement_quality": "End-loaded",
+          "recommendations": [
+            "Reduce hashtag count to 3-5 and focus on niche hashtags related to the content (e.g. #DiversityAndInclusion, #GlobalTeam, #EmployeeEngagement)",
+            "Use hashtags naturally within sentences instead of end-loading",
+            "Consider adding a mix of broad and niche hashtags to increase visibility and relevance",
+            "Use a consistent tone and language throughout the post to improve engagement and readability",
+            "Tag specific people mentioned in the post to increase engagement and encourage sharing",
+            "Use keywords like 'global team', 'employee engagement', and 'diversity and inclusion' to improve SEO alignment and keyword optimization"
+          ]
+        },
+        "analytics": {
+          "overall_sentiment": "Positive",
+          "engagement_potential": "High",
+          "expected_impressions": "8.50% of followers",
+          "expected_engagement_rate": "12.50%",
+          "content_type": "Text",
+          "strengths": [
+            "Storytelling",
+            "Emotional Connection",
+            "Visual Imagery"
+          ],
+          "weaknesses": [
+            "Lack of Visual Elements",
+            "Too Long"
+          ],
+          "improvement_suggestions": [
+            "Add images or videos to break up text",
+            "Use a more concise format",
+            "Use more specific and relevant hashtags"
+          ]
+        },
+        "tagging": {
+          "tags_found": [
+            "Wadii El Karkouri",
+            "Grunde Rønholt"
+          ],
+          "tag_count": 2,
+          "tagging_quality": "Good",
+          "has_context": true,
+          "spam_risk": "Low",
+          "recommendations": [
+            "Add a brief summary or introduction to the post to provide context and make it more engaging",
+            "Use more specific and relevant hashtags, such as #diversityandinclusion, #globalteam, #collaboration, and #leadership",
+            "Consider adding a call-to-action or question to encourage engagement and spark conversations",
+            "Use keywords like 'global value creation', 'continuous learning', and 'inclusive culture' to improve SEO and keyword optimization",
+            "Tone analysis suggests a positive and professional tone, which is suitable for a LinkedIn post; however, consider adding more emotional language to make it more relatable and engaging"
+          ]
+        },
+        "keywords": {
+          "primary_keywords": [],
+          "keyword_density": {},
+          "trending_keywords": [],
+          "trending_keyword_count": 0,
+          "seo_score": "Fair",
+          "keyword_relevance": "Medium",
+          "search_visibility_score": 50,
+          "tone_analysis": {
+            "friendly_score": 50,
+            "persuasive_score": 50,
+            "formal_score": 50,
+            "tone_recommendation": "Balance tone for professional engagement",
+            "needs_simplification": false
+          },
+          "missing_keywords": [],
+          "keyword_placement_quality": "Natural",
+          "recommendations": []
+        },
+        "overall_score": "Excellent",
+        "virality_score": 70,
+        "priority_actions": [
+          "Use a more attention-grabbing hook (49 characters) to increase engagement",
+          "Add a re-hook (51 characters) to reinforce the opening and maintain reader interest",
+          "Reduce hashtag count to 3-5 and focus on niche hashtags related to the content (e.g. #DiversityAndInclusion, #GlobalTeam, #EmployeeEngagement)",
+          "Add images or videos to break up text"
+        ]
+      },
+      "timestamp": "2026-03-08T09:31:54.631339",
+      "expires_at": "2026-03-15T09:31:54.631339",
+      "cached_at": "2026-03-08 09:31:54"
+    }
+  }
+}

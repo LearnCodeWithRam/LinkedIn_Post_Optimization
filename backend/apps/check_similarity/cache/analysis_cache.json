@@ -1,0 +1,248 @@
+{
+  "version": "1.0.0",
+  "analyses": {
+    ":7370780704059777025": {
+      "post_id": ":7370780704059777025",
+      "post_content_preview": "Title: We are excited to share that Mr. Somjit Amrit, CEO, IIT Mandi TIH moderated in a Panel discussion at AiXcelerate 2025, hosted by the School of Management, IIT Mandi, on the theme “𝗥𝗲𝘀𝗽𝗼𝗻𝘀𝗶𝗯𝗹𝗲 𝗔",
+      "analysis_data": {
+        "structure": {
+          "hook_length": 29,
+          "hook_quality": "Fair",
+          "rehook_present": true,
+          "main_content_length": 536,
+          "has_wrap_up": false,
+          "has_cta": false,
+          "structure_score": "Needs Improvement",
+          "recommendations": [
+            "Structure and Formatting: Break up the content into smaller paragraphs to improve readability. Use headings to separate sections and emphasize key points.",
+            "Hashtag Usage and Relevance: Use a mix of niche-specific hashtags (e.g., #HumanCentredAI, #ResponsibleAI) and broader industry-related hashtags (e.g., #ArtificialIntelligence, #MachineLearning). Research and use relevant hashtags to increase discoverability.",
+            "Engagement Potential and Analytics: Add a clear call-to-action (CTA) in the main content or wrap-up section to encourage engagement. Consider asking questions or requesting feedback from readers to boost interaction.",
+            "People Tagging Strategy: Tag relevant individuals, especially Mr. Somjit Amrit and the panelists, to increase visibility and potential engagement from their networks.",
+            "Keyword Optimization, SEO Alignment, Tone Analysis, and Trending Words: Use a more conversational tone and incorporate industry-related keywords (e.g., #AIethics, #digitaltransformation) to improve SEO alignment. Identify and include trending words or phrases related to AI and its applications.",
+            "Readability and Flow: Ensure the content is concise and easy to read by breaking up long paragraphs and using subheadings to separate ideas. Avoid excessive use of bold text and emojis, which can be distracting."
+          ]
+        },
+        "hashtags": {
+          "hashtags_found": [
+            "ResponsibleAI",
+            "HumanCentredAI",
+            "MML",
+            "InnovationWithIntegrity"
+          ],
+          "hashtag_count": 4,
+          "relevance_score": "High",
+          "spam_risk": "Low",
+          "has_broad_hashtags": true,
+          "has_niche_hashtags": false,
+          "placement_quality": "Natural",
+          "recommendations": [
+            "Use niche hashtags like #B2BContentStrategy, #AIethics, and #ResponsibleInnovation to attract targeted audience.",
+            "Add 1-2 more relevant hashtags to reach the optimal range of 3-5 hashtags per post.",
+            "Consider using a mix of long-tail keywords (#HumanCentredArtificialIntelligence) and broad hashtags (#AI) for better discovery.",
+            "Use a consistent tone and language throughout the post, avoiding jargon and technical terms that might confuse the audience."
+          ]
+        },
+        "analytics": {
+          "overall_sentiment": "Neutral",
+          "engagement_potential": "Low",
+          "expected_impressions": "Below average, likely less than 10% of followers (approx. 850-1000)",
+          "expected_engagement_rate": "3.5-4.5%",
+          "content_type": "Text/Carousel",
+          "strengths": [
+            "Use of emojis and visual elements",
+            "Tagging relevant people",
+            "Relevant hashtags"
+          ],
+          "weaknesses": [
+            "Lengthy content, may be overwhelming for readers",
+            "Lack of clear call-to-action (CTA)",
+            "Sentiment could be more engaging"
+          ],
+          "improvement_suggestions": [
+            "Break up the text into smaller sections or bullet points to improve readability",
+            "Use a clearer and more concise CTA, such as 'Learn more about Human-Centred AI' or 'Join our panel discussion'",
+            "Consider adding more visuals, such as infographics or images, to make the content more engaging",
+            "Encourage engagement by asking questions or requesting feedback in the comments section",
+            "Monitor and adjust hashtags for better reach and relevance"
+          ]
+        },
+        "tagging": {
+          "tags_found": [
+            "Somjit Amrit",
+            "Nikhil Bhushan",
+            "Dr. Rishi Mohan Bhatnagar"
+          ],
+          "tag_count": 3,
+          "tagging_quality": "Good",
+          "has_context": true,
+          "spam_risk": "Low",
+          "recommendations": [
+            "Limit tag count to 2-3 for better readability: Excessive tagging may clutter the post and be perceived as spammy",
+            "Provide more context for tags when possible (e.g., why they were tagged): This can help maintain professionalism and add value to the conversation"
+          ]
+        },
+        "keywords": {
+          "primary_keywords": [
+            "Responsible AI",
+            "Human-Centred AI",
+            "AI Adoption",
+            "Governance Frameworks"
+          ],
+          "keyword_density": {
+            "Responsible AI": 2.1,
+            "Human-Centred AI": 1.8,
+            "AI Adoption": 1.5,
+            "Governance Frameworks": 1.3
+          },
+          "trending_keywords": [
+            "𝗥𝗲𝘀𝗽𝗼𝗻𝘀𝗶𝗯𝗹𝗲 𝗔𝗜",
+            "𝗛𝘂𝗺𝗮𝗻-𝗖𝗲𝗻𝘁𝗿𝗲𝗱 𝗔𝗜"
+          ],
+          "trending_keyword_count": 2,
+          "seo_score": "Fair",
+          "keyword_relevance": "High",
+          "search_visibility_score": 35,
+          "tone_analysis": {
+            "friendly_score": 60,
+            "persuasive_score": 40,
+            "formal_score": 80,
+            "tone_recommendation": "Balance friendly and formal tone for better engagement.",
+            "needs_simplification": false
+          },
+          "missing_keywords": [
+            "AI Ethics",
+            "AI Governance"
+          ],
+          "keyword_placement_quality": "Natural",
+          "recommendations": [
+            "Use specific action-oriented language in the post to increase engagement",
+            "Tag relevant influencers and experts in the AI industry for better visibility",
+            "Optimize image captions with target keywords for improved search visibility",
+            "Break up long content into shorter paragraphs for easier reading"
+          ]
+        },
+        "overall_score": "Fair",
+        "virality_score": 54,
+        "priority_actions": [
+          "Structure and Formatting: Break up the content into smaller paragraphs to improve readability. Use headings to separate sections and emphasize key points.",
+          "Hashtag Usage and Relevance: Use a mix of niche-specific hashtags (e.g., #HumanCentredAI, #ResponsibleAI) and broader industry-related hashtags (e.g., #ArtificialIntelligence, #MachineLearning). Research and use relevant hashtags to increase discoverability.",
+          "Use niche hashtags like #B2BContentStrategy, #AIethics, and #ResponsibleInnovation to attract targeted audience.",
+          "Break up the text into smaller sections or bullet points to improve readability",
+          "Use specific action-oriented language in the post to increase engagement"
+        ]
+      },
+      "timestamp": "2025-12-03T11:15:50.226487",
+      "expires_at": "2025-12-10T11:15:50.226487",
+      "cached_at": "2025-12-03 11:15:50"
+    },
+    ":7371874224715628544": {
+      "post_id": ":7371874224715628544",
+      "post_content_preview": "Title: We feel even prouder when our startup takes the spotlight!\nCongratulations MadVR Solutions Private Limited on winning 𝘁𝗵𝗲 𝗽𝗿𝗲𝘀𝘁𝗶𝗴𝗶𝗼𝘂𝘀 𝗘𝘅𝗰𝗲𝗹𝗹𝗲𝗻𝗰𝗲 𝗶𝗻 𝗕𝗲𝘀𝘁 𝗔𝗜 𝗦𝗼𝗹𝘂𝘁𝗶𝗼𝗻 𝗦𝗵𝗼𝘄𝗰𝗮𝘀𝗲 𝗶𝗻 𝘁𝗵𝗲 𝗠𝗼𝘀𝘁 𝗜𝗻𝗻𝗼𝘃𝗮𝘁",
+      "analysis_data": {
+        "structure": {
+          "hook_length": 49,
+          "hook_quality": "Good",
+          "rehook_present": true,
+          "main_content_length": 273,
+          "has_wrap_up": false,
+          "has_cta": false,
+          "structure_score": "Needs Improvement",
+          "recommendations": [
+            "Condense the post to fit within the 953 character limit for main content.",
+            "Add a clear CTA (e.g., 'Congrats on your win!') and a second CTA (e.g., 'What do you think about MadVR's achievement?')",
+            "Use white space more effectively to improve readability.",
+            "Remove unnecessary characters from the hashtags, making them more readable and SEO-friendly.",
+            "Consider using more relevant and specific keywords related to the industry and award.",
+            "Add a brief wrap-up summarizing the key points (132 character limit)."
+          ]
+        },
+        "hashtags": {
+          "hashtags_found": [],
+          "hashtag_count": 0,
+          "relevance_score": "Unknown",
+          "spam_risk": "Unknown",
+          "has_broad_hashtags": false,
+          "has_niche_hashtags": false,
+          "placement_quality": "Unknown",
+          "recommendations": []
+        },
+        "analytics": {
+          "overall_sentiment": "Positive",
+          "engagement_potential": "Medium",
+          "expected_impressions": "700-900 range considering the audience and content quality",
+          "expected_engagement_rate": "5-7%",
+          "content_type": "Text",
+          "strengths": [
+            "The post is well-formatted with a clear title and content",
+            "People tagging increases engagement potential",
+            "Keyword optimization is good, but can be improved"
+          ],
+          "weaknesses": [
+            "Hashtag usage could be more relevant and concise",
+            "The tone is formal, which may limit reach to a broader audience",
+            "Content length is lengthy, potentially reducing engagement"
+          ],
+          "improvement_suggestions": [
+            "Shorten the content by 30% for better readability and engagement",
+            "Use more specific, relevant hashtags (e.g., #AI, #StartupSuccess)",
+            "Experiment with a mix of formal and informal tone to increase reach",
+            "Consider adding visual elements or emojis to enhance user experience"
+          ]
+        },
+        "tagging": {
+          "tags_found": [],
+          "tag_count": 0,
+          "tagging_quality": "Unknown",
+          "has_context": false,
+          "spam_risk": "Unknown",
+          "recommendations": []
+        },
+        "keywords": {
+          "primary_keywords": [
+            "MadVR Solutions",
+            "Indian Institute of Technology Mandi",
+            "Startup Award"
+          ],
+          "keyword_density": {
+            "startup award": 2.15,
+            "madvr solutions": 1.8
+          },
+          "trending_keywords": [],
+          "trending_keyword_count": 0,
+          "seo_score": "Fair",
+          "keyword_relevance": "Medium",
+          "search_visibility_score": 40,
+          "tone_analysis": {
+            "friendly_score": 60,
+            "persuasive_score": 30,
+            "formal_score": 90,
+            "tone_recommendation": "Balance friendliness and formality",
+            "needs_simplification": false
+          },
+          "missing_keywords": [
+            "artificial intelligence",
+            "machine learning"
+          ],
+          "keyword_placement_quality": "Natural",
+          "recommendations": [
+            "Use more specific keywords related to the industry (e.g., AI, ML)",
+            "Add relevant hashtags to increase discoverability",
+            "People tagging strategy is good, but consider adding a brief description of each person's role or contribution",
+            "Consider rewriting the content to improve engagement potential and analytics"
+          ]
+        },
+        "overall_score": "Poor",
+        "virality_score": 36,
+        "priority_actions": [
+          "Condense the post to fit within the 953 character limit for main content.",
+          "Add a clear CTA (e.g., 'Congrats on your win!') and a second CTA (e.g., 'What do you think about MadVR's achievement?')",
+          "Shorten the content by 30% for better readability and engagement",
+          "Use more specific keywords related to the industry (e.g., AI, ML)"
+        ]
+      },
+      "timestamp": "2025-12-03T15:38:29.901176",
+      "expires_at": "2025-12-10T15:38:29.901176",
+      "cached_at": "2025-12-03 15:38:29"
+    }
+  }
+}
