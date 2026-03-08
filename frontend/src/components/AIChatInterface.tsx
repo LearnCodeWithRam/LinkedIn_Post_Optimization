@@ -47,7 +47,7 @@ interface AIChatInterfaceProps {
   };
 }
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || '/api';
 const REQUEST_TIMEOUT = 120000;
 
 const AIChatInterface = ({ onClose, onPostGenerated, onConfigureClick, configContext }: AIChatInterfaceProps) => {
@@ -82,7 +82,7 @@ const AIChatInterface = ({ onClose, onPostGenerated, onConfigureClick, configCon
     try {
       setIsLoadingSessions(true);
       const response = await fetch(
-        `${API_BASE_URL}/api/v1/new_post/sessions/user/?user_identifier=${userIdentifier}`,
+        `${API_BASE_URL}/v1/new_post/sessions/user/?user_identifier=${userIdentifier}`,
         {
           method: 'GET',
           credentials: 'include',
@@ -114,7 +114,7 @@ const AIChatInterface = ({ onClose, onPostGenerated, onConfigureClick, configCon
     try {
       setIsLoading(true);
       const response = await fetch(
-        `${API_BASE_URL}/api/v1/new_post/sessions/${sessionIdToLoad}/messages/?user_identifier=${userIdentifier}`,
+        `${API_BASE_URL}/v1/new_post/sessions/${sessionIdToLoad}/messages/?user_identifier=${userIdentifier}`,
         {
           method: 'GET',
           credentials: 'include',
@@ -147,7 +147,7 @@ const AIChatInterface = ({ onClose, onPostGenerated, onConfigureClick, configCon
   const deleteSession = useCallback(async (sessionIdToDelete: string) => {
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/v1/new_post/sessions/${sessionIdToDelete}/?user_identifier=${userIdentifier}`,
+        `${API_BASE_URL}/v1/new_post/sessions/${sessionIdToDelete}/?user_identifier=${userIdentifier}`,
         {
           method: 'DELETE',
           credentials: 'include',
@@ -168,7 +168,7 @@ const AIChatInterface = ({ onClose, onPostGenerated, onConfigureClick, configCon
   const loadPreview = useCallback(async (sessionIdToPreview: string) => {
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/v1/new_post/sessions/${sessionIdToPreview}/messages/?user_identifier=${userIdentifier}`,
+        `${API_BASE_URL}/v1/new_post/sessions/${sessionIdToPreview}/messages/?user_identifier=${userIdentifier}`,
         {
           method: 'GET',
           credentials: 'include',
@@ -290,7 +290,7 @@ const AIChatInterface = ({ onClose, onPostGenerated, onConfigureClick, configCon
     const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/new_post/chat/`, {
+      const response = await fetch(`${API_BASE_URL}/v1/new_post/chat/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

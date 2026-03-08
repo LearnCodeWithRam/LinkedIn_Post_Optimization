@@ -29,7 +29,7 @@ const LinkedInPostEditor: React.FC<LinkedInPostEditorProps> = ({ editPostData })
   const [scheduleTime, setScheduleTime] = useState('');
   const [hasError, setHasError] = useState(false);
   const maxChars = 3000;
-  const API_BASE_URL = 'http://localhost:8000/'; // Make sure this matches your backend URL
+  const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || '/api';
 
   // AI Writer States
   type GeneratedPost = {
@@ -258,7 +258,7 @@ const LinkedInPostEditor: React.FC<LinkedInPostEditorProps> = ({ editPostData })
   const fetchViralPosts = async () => {
     setIsLoadingViralPosts(true);
     try {
-      const response = await fetch('http://localhost:8000/api/v1/viralpost-scraping/linkedin-posts/');
+      const response = await fetch(`${API_BASE_URL}/v1/viralpost-scraping/linkedin-posts/`);
 
       if (!response.ok) {
         throw new Error('Failed to load viral posts');

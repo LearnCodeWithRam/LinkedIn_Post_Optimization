@@ -162,8 +162,8 @@ export const Login: React.FC = () => {
 							{/* <button
 								type="button"
 								onClick={async () => {
-									const apiUrl = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000';
-									const response = await fetch(`${apiUrl}/api/v1/accounts/linkedin/signin/`);
+									const apiUrl = (import.meta as any).env?.VITE_API_URL || '/api';
+									const response = await fetch(`${apiUrl}/v1/accounts/linkedin/signin/`);
 									const data = await response.json();
 									if (data.auth_url) window.location.href = data.auth_url;
 								}}
@@ -188,8 +188,8 @@ export const Login: React.FC = () => {
 							{/* <button
 								type="button"
 								onClick={async () => {
-									const apiUrl = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000';
-									const response = await fetch(`${apiUrl}/api/v1/accounts/google/signin/`);
+									const apiUrl = (import.meta as any).env?.VITE_API_URL || '/api';
+									const response = await fetch(`${apiUrl}/v1/accounts/google/signin/`);
 									const data = await response.json();
 									if (data.auth_url) window.location.href = data.auth_url;
 								}}

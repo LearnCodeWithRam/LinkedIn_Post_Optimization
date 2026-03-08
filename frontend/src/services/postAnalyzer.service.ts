@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { analysisCacheService } from './analysisCache.service';
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-const ANALYZE_ENDPOINT = `${BASE_URL}/api/v1/post-analyzer/analyze/`;
+const API_BASE = import.meta.env.VITE_API_URL || '/api';
+const ANALYZE_ENDPOINT = `${API_BASE}/v1/post-analyzer/analyze/`;
 
 export interface PostAnalyzerRequest {
   post_content: string;
@@ -193,7 +193,7 @@ export const getAnalysisCacheStats = () => {
 // POST OPTIMIZATION
 // ============================================
 
-const OPTIMIZE_ENDPOINT = `${BASE_URL}/api/v1/new_post/generate/optimized/`;
+const OPTIMIZE_ENDPOINT = `${API_BASE}/v1/new_post/generate/optimized/`;
 
 export interface OptimizePostRequest {
   original_post: string;

@@ -21,12 +21,8 @@ A comprehensive AI-powered platform for LinkedIn content optimization using **AW
 
 ### Backend
 - Django 4.2+ with Django REST Framework
-- PostgreSQL 15+ with TimescaleDB
-- MongoDB Atlas / AWS DocumentDB for analytics
-- Redis 7+ for caching and Celery
-- MinIO for object storage
+- MongoDB Atlas
 - Qdrant for vector storage
-- Celery for async tasks
 - AWS Bedrock for AI models
 
 ### Frontend

@@ -7,7 +7,7 @@
 
 // Get API base URL from environment variable
 const getApiBaseUrl = (): string => {
-    return (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000';
+    return (import.meta as any).env?.VITE_API_URL || '/api';
 };
 
 /**

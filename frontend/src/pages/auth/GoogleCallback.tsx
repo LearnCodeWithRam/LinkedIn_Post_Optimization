@@ -35,8 +35,8 @@ export const GoogleCallback: React.FC = () => {
         // Process Google callback
         ; (async () => {
             try {
-                const apiUrl = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000'
-                const url = `${apiUrl}/api/v1/accounts/google/signin/callback/?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state)}`
+                const apiUrl = (import.meta as any).env?.VITE_API_URL || '/api'
+                const url = `${apiUrl}/v1/accounts/google/signin/callback/?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state)}`
 
                 const response = await fetch(url)
 

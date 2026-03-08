@@ -174,7 +174,8 @@ export default function LinkedInViralityAnalyzer({ initialUserPost = '', recomme
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:8000/api/v1/viralpost-scraping/linkedin-posts/');
+      const apiUrl = (import.meta as any).env?.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/v1/viralpost-scraping/linkedin-posts/`);
 
       if (!response.ok) {
         throw new Error('Failed to load posts');
@@ -220,7 +221,8 @@ export default function LinkedInViralityAnalyzer({ initialUserPost = '', recomme
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:8000/api/v1/viralpost-scraping/scrape/', {
+      const apiUrl = (import.meta as any).env?.VITE_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/v1/viralpost-scraping/scrape/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
