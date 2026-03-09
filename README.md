@@ -38,8 +38,6 @@ A comprehensive AI-powered platform for LinkedIn content optimization using **AW
 - Python 3.10+
 - Node.js 18+
 - Docker and Docker Compose
-- PostgreSQL 15+
-- Redis 7+
 - MongoDB Atlas account (for development) or AWS DocumentDB (for production)
 - AWS Account with Bedrock access
 - LibreOffice (for Excel file processing)
@@ -116,7 +114,7 @@ A comprehensive AI-powered platform for LinkedIn content optimization using **AW
 - The Django admin interface is available at `http://localhost:8000/admin/`
 - API documentation is available at `http://localhost:8000/api/docs/`
 - Run tests with `python manage.py test`
-- Monitor Celery tasks in the logs
+
 
 ### Frontend Development
 - Development server runs at `http://localhost:5173` (Vite default)
@@ -155,9 +153,7 @@ A comprehensive AI-powered platform for LinkedIn content optimization using **AW
 The platform uses a microservices-inspired architecture with:
 - **Django REST API** for backend services
 - **React SPA** for the frontend
-- **Celery** for asynchronous task processing
 - **MongoDB** for analytics data storage
-- **PostgreSQL** with TimescaleDB for time-series data
 - **Qdrant** for vector similarity search
 - **AWS Bedrock** for AI model inference
 
